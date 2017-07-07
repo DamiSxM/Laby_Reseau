@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using Laby_Interfaces;
 
@@ -17,13 +18,19 @@ namespace Laby_Reseau
         GestionUDP _gestionUDP;
         GestionTCP _gestionTCP;
 
-        public bool IsServer { get { return _ipServer == IPAddress.Loopback.ToString(); } }
-        public List<string> Clients { get { return _gestionTCP.Clients; } }
+        /*public bool IsServer { get { return _ipServer == IPAddress.Loopback.ToString(); } }
+        public List<string> Clients { get { return _gestionTCP.Clients; } }*/
+
+        public List<string> GetClientsIP() { return _gestionTCP.Clients; }
+        public int GetClientsCount() { return _gestionTCP.Clients.Count; }
+        public bool IsServer() { return _ipServer == IPAddress.Loopback.ToString(); }
 
         public event DataReceive DataReceived;
+        public event ClientConnected ClientConnected;
         public event RechercheServer FinRechercheServer;
-        private void OnDataReceived(string sender, object data) { if (DataReceived != null) DataReceived(sender, data); }
-        private void OnFinRechercheServer() { if (DataReceived != null) FinRechercheServer(IsServer); }
+        void OnDataReceived(string sender, object data) { if (DataReceived != null) DataReceived(sender, data); }
+        void OnClientConnected(string ip) { if (ClientConnected != null) ClientConnected(ip); }
+        void OnFinRechercheServer() { if (DataReceived != null) FinRechercheServer(IsServer()); }
 
         public Reseau()
         {
@@ -50,7 +57,13 @@ namespace Laby_Reseau
             _gestionUDP = new GestionUDP(_port);
             _gestionUDP.FinRechercheServer += UDP_FinRechercheServer; ;
             _gestionTCP = new GestionTCP(_port);
+            _gestionTCP.ClientConnected += TCP_ClientConnected;
             _gestionTCP.DataReceived += TCP_DataReceived;
+        }
+
+        private void TCP_ClientConnected(string ip)
+        {
+            OnClientConnected(ip);
         }
 
         private void TCP_DataReceived(string sender, object data)
@@ -88,7 +101,7 @@ namespace Laby_Reseau
         {
             _gestionTCP.SendData(data);
         }
-        public void SendData(object data, string ipclient)
+        public void SendDataTo(object data, string ipclient)
         {
             _gestionTCP.SendData(data, ipclient);
         }

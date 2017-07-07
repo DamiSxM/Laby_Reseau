@@ -19,6 +19,7 @@ namespace Laby_Reseau
         public List<string> Clients { get { return _clients.Keys.OfType<string>().ToList(); } }
 
         public event DataReceive DataReceived;
+        public event ClientConnected ClientConnected;
 
         public ServerTCP(int port)
         {
@@ -71,6 +72,7 @@ namespace Laby_Reseau
                 System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.ConnectClient : Ne contient pas le client {0}, création client", clientNom));
                 client.Nom = clientNom;
                 _clients.Add(clientNom, client);
+                ClientConnected(clientNom); // Event ClientConnected
             }
         }
 
@@ -105,7 +107,7 @@ namespace Laby_Reseau
 
         public void SendDataClients(object data)
         {
-            System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.SendDataClients : _clients ; count : {0}", _clients.Count));
+            System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.SendDataClients : server -> clients : nb clients : {0}", _clients.Count));
             foreach (DictionaryEntry entry in _clients)
             {
                 ((ConnexionClient)entry.Value).SendData(data);

@@ -30,6 +30,7 @@ namespace Laby_Reseau
         ClientTCP _client;
 
         public event DataReceive DataReceived;
+        public event ClientConnected ClientConnected;
 
         public List<string> Clients { get { if (_server != null)  return _server.Clients; else return null; } }
 
@@ -43,6 +44,11 @@ namespace Laby_Reseau
         {
             _server = new ServerTCP(_port);
             _server.DataReceived += GestionTCPDataReceived;
+            _server.ClientConnected += GestionTCPClientConnected;
+        }
+        private void GestionTCPClientConnected(string ip)
+        {
+            ClientConnected(ip);
         }
         #endregion
 
