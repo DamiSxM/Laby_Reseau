@@ -44,9 +44,10 @@ namespace Laby_Reseau
             }
         }
 
+        bool _lectureLoop;
         void Lecture(object clientObj)
         {
-            bool lectureLoop = true;
+            _lectureLoop = true;
             TcpClient client = (TcpClient)clientObj;
             do
             {
@@ -63,10 +64,11 @@ namespace Laby_Reseau
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine(string.Format("ClientTCP.Lecture : Exception : {0}", ex.Message));
-                    lectureLoop = false;
+                    //throw ex;
+                    /*System.Diagnostics.Debug.WriteLine(string.Format("ClientTCP.Lecture : Exception : {0}", ex.Message));
+                    lectureLoop = false;*/
                 }
-            } while (lectureLoop);
+            } while (_lectureLoop);
         }
 
         private void AttemptLogin(string nomClient)
@@ -95,6 +97,13 @@ namespace Laby_Reseau
         {
             string ip = _client.Client.RemoteEndPoint.ToString().Split(':')[0];
             DataReceived(ip, data);
+        }
+
+        public void Close()
+        {
+            _lectureLoop = false;
+            _client.Close();
+            System.Diagnostics.Debug.WriteLine(string.Format("ClientTCP.Close"));
         }
     }
 }

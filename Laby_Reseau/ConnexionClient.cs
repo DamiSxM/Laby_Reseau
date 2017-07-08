@@ -28,9 +28,10 @@ namespace Laby_Reseau
             th.Start(_client);
         }
 
+        bool _lectureLoop;
         void Lecture(object clientObj)
         {
-            bool lectureLoop = true;
+            _lectureLoop = true;
             TcpClient client = (TcpClient)clientObj;
             do
             {
@@ -48,9 +49,9 @@ namespace Laby_Reseau
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine(string.Format("ConnexionClient.Lecture : Exception : {0}", ex.Message));
-                    lectureLoop = false;
+                    _lectureLoop = false;
                 }
-            } while (lectureLoop);
+            } while (_lectureLoop);
         }
         private void GestionDataFromServer(object data)
         {
@@ -71,6 +72,13 @@ namespace Laby_Reseau
             {
                 System.Diagnostics.Debug.WriteLine(string.Format("ConnexionClient.SendData : Exception : {0}", ex.Message));
             }
+        }
+
+        public void Close()
+        {
+            _lectureLoop = false;
+            _client.SendTimeout = 1;
+            _client.Close();
         }
     }
 }

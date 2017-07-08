@@ -49,18 +49,25 @@ namespace Laby_Reseau
                 IPEndPoint toutLeMonde = new IPEndPoint(IPAddress.Any, _port);
                 client.Receive(ref toutLeMonde);
                 _ipServer = toutLeMonde.Address.ToString().Split(':')[0];
-                OnFinRechercheServer(_ipServer); // On renvoie l'ip du server
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                if (_ipServer == null) OnFinRechercheServer(null); // On renvoie rien
+                System.Diagnostics.Debug.WriteLine(string.Format("GestionUDP.ThreadRechercheServer : Exception : {0}", ex));
             }
-            finally { client.Close(); }
+            finally
+            {
+                OnFinRechercheServer(_ipServer); // On renvoie l'ip du server
+                client.Close();
+            }
         }
         #endregion
 
         #region Création Server UDP
-        public void CreationServer() { new Thread(LoopEnvoiBroadcast).Start(); }
+        Thread _thBroadcast;
+        public void CreationServer(){
+            _thBroadcast = new Thread(LoopEnvoiBroadcast);
+            _thBroadcast.Start();
+        }
 
         void LoopEnvoiBroadcast()
         {
@@ -80,5 +87,12 @@ namespace Laby_Reseau
             server.Close();
         }
         #endregion
+
+        public void Close()
+        {
+            _loopSendBroadcast = false;
+            if(_thBroadcast != null) _thBroadcast.Join();
+            System.Diagnostics.Debug.WriteLine(string.Format("GestionUDP.Close"));
+        }
     }
 }

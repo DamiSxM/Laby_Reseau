@@ -14,6 +14,7 @@ namespace Laby_Reseau
         string _ipServer;
         int _port;
         int _maxPlayer;
+        bool _isFinRechercheServer;
 
         GestionUDP _gestionUDP;
         GestionTCP _gestionTCP;
@@ -30,7 +31,7 @@ namespace Laby_Reseau
         public event RechercheServer FinRechercheServer;
         void OnDataReceived(string sender, object data) { if (DataReceived != null) DataReceived(sender, data); }
         void OnClientConnected(string ip) { if (ClientConnected != null) ClientConnected(ip); }
-        void OnFinRechercheServer() { if (DataReceived != null) FinRechercheServer(IsServer()); }
+        void OnFinRechercheServer(bool isServer) { if (FinRechercheServer != null) FinRechercheServer(isServer); }
 
         public Reseau()
         {
@@ -47,8 +48,8 @@ namespace Laby_Reseau
             Initialize();
             switch (init)
             {
-                case Etat.SERVER: CreationServer(); break;
                 case Etat.CLIENT: RechercheServer(); break;
+                case Etat.SERVER: UDP_FinRechercheServer(null); break;
             }
         }
 
@@ -72,8 +73,10 @@ namespace Laby_Reseau
             OnDataReceived(sender, data); // Faire des trucs..
         }
 
+        public bool IsFinRechercheServer() { return _isFinRechercheServer; }
         private void UDP_FinRechercheServer(string ipserver)
         {
+            _isFinRechercheServer = true;
             if (ipserver != null) // Il y a déjà un server
             {
                 System.Diagnostics.Debug.WriteLine(string.Format("Reseau.UDP_FinRechercheServer : {0} : server trouvé  ! création client TCP !", ipserver));
@@ -82,10 +85,10 @@ namespace Laby_Reseau
             }
             else // Pas de server, création server
             {
-                System.Diagnostics.Debug.WriteLine(string.Format("Reseau.UDP_FinRechercheServer : {0} : server introuvable  ! création server TCP !", ipserver));
                 CreationServer(); // Création TCP Listener
+                System.Diagnostics.Debug.WriteLine(string.Format("Reseau.UDP_FinRechercheServer : {0} : server introuvable  ! création server TCP !", ipserver));
             }
-            OnFinRechercheServer();
+            OnFinRechercheServer(IsServer());
         }
 
         public void RechercheServer() { _gestionUDP.RechercheServer(); }
@@ -109,6 +112,13 @@ namespace Laby_Reseau
         public void stopLoop(string s)
         {
             _gestionUDP.LoopSendBroadcast = false;
+        }
+
+        public void Close()
+        {
+            _gestionUDP.Close();
+            _gestionTCP.Close();
+            System.Diagnostics.Debug.WriteLine(string.Format("Reseau.Close"));
         }
     }
 }

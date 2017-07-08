@@ -28,9 +28,10 @@ namespace Laby_Reseau
             _threadEcoute.Start();
         }
 
+        bool _ecouteLoop;
         private void Ecoute()
         {
-            bool ecouteLoop = true;
+            _ecouteLoop = true;
             try
             {
                 _listener = new TcpListener(IPAddress.Any, _port);
@@ -41,13 +42,17 @@ namespace Laby_Reseau
                     {
                         ConnexionClient client = new ConnexionClient(_listener.AcceptTcpClient());
                         client.DataReceived += OnDataReceived;
+                        _clients.Add(client.Nom, client);       // TEST !
+                        System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.Ecoute : création client {0}", client.Nom));
+                        ClientConnected(client.Nom); // Event ClientConnected
+
                     }
                     catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.Ecoute : Exception : echec création client : {0}", ex.Message));
-                        ecouteLoop = false;
+                        _ecouteLoop = false;
                     }
-                } while (ecouteLoop);
+                } while (_ecouteLoop);
             }
             catch (Exception ex)
             {
@@ -57,11 +62,12 @@ namespace Laby_Reseau
 
         private void OnDataReceived(ConnexionClient sender, object data)
         {
-            if (data.ToString() == sender.Nom) ConnectClient(sender, (string)data);
-            else DataReceived(sender.Nom, data);
+            /*if (data.ToString() == sender.Nom) ConnectClient(sender, (string)data);
+            else DataReceived(sender.Nom, data);*/
+            DataReceived(sender.Nom, data);
         }
 
-        void ConnectClient(ConnexionClient client, string clientNom)
+        /*void ConnectClient(ConnexionClient client, string clientNom)
         {
             if (_clients.Contains(clientNom))
             {
@@ -74,7 +80,7 @@ namespace Laby_Reseau
                 _clients.Add(clientNom, client);
                 ClientConnected(clientNom); // Event ClientConnected
             }
-        }
+        }*/
 
         private void SendToClients(ConnexionClient client, object data)
         {
@@ -123,6 +129,21 @@ namespace Laby_Reseau
                     ((ConnexionClient)entry.Value).SendData(data);
                 }
             }
+        }
+
+        public void Close()
+        {
+            foreach (DictionaryEntry entry in _clients)
+            {
+                ConnexionClient client = ((ConnexionClient)entry.Value);
+                client.DataReceived -= OnDataReceived;
+                client.Close();
+            }
+            _clients.Clear();
+
+            _ecouteLoop = false;
+            _listener.Stop();
+            System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.Close"));
         }
     }
 }

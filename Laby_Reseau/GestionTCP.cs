@@ -77,13 +77,22 @@ namespace Laby_Reseau
             else
             {
                 if (_client != null)_client.SendData(data);
-                else System.Diagnostics.Debug.WriteLine("GestionTCP.SendData : Problème... ni client, ni server...");
+                else System.Diagnostics.Debug.WriteLine("GestionTCP.SendData : Problème... ni client, ni server..."+ data.ToString());
             }
         }
 
         public void SendData(object data, string ipclient)
         {
             if (_server != null) _server.SendDataClient(data, ipclient);
+        }
+
+        public void Close()
+        {
+            System.Diagnostics.Debug.WriteLine(string.Format("GestionTCP.Close DBT"));
+            if (_server != null) _server.Close();
+            System.Diagnostics.Debug.WriteLine(string.Format("GestionTCP._server.Close"));
+            if (_client != null) _client.Close();
+            System.Diagnostics.Debug.WriteLine(string.Format("GestionTCP._client.Close"));
         }
     }
 }
