@@ -3,9 +3,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
-using Laby_Interfaces;
+//using Laby_Interfaces;
 
-namespace Laby_Reseau
+//namespace Laby_Reseau
+namespace Labyrinthe
 {
     class ClientTCP
     {
@@ -65,8 +66,8 @@ namespace Laby_Reseau
                 catch (Exception ex)
                 {
                     //throw ex;
-                    /*System.Diagnostics.Debug.WriteLine(string.Format("ClientTCP.Lecture : Exception : {0}", ex.Message));
-                    lectureLoop = false;*/
+                    System.Diagnostics.Debug.WriteLine(string.Format("ClientTCP.Lecture : Exception : {0}", ex.Message));
+                    _lectureLoop = false;
                 }
             } while (_lectureLoop);
         }

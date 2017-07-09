@@ -5,9 +5,10 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Laby_Interfaces;
+//using Laby_Interfaces;
 
-namespace Laby_Reseau
+//namespace Laby_Reseau
+namespace Labyrinthe
 {
     class ServerTCP
     {
@@ -62,25 +63,8 @@ namespace Laby_Reseau
 
         private void OnDataReceived(ConnexionClient sender, object data)
         {
-            /*if (data.ToString() == sender.Nom) ConnectClient(sender, (string)data);
-            else DataReceived(sender.Nom, data);*/
             DataReceived(sender.Nom, data);
         }
-
-        /*void ConnectClient(ConnexionClient client, string clientNom)
-        {
-            if (_clients.Contains(clientNom))
-            {
-                System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.ConnectClient : Contient déjà le client {0}", clientNom));
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.ConnectClient : Ne contient pas le client {0}, création client", clientNom));
-                client.Nom = clientNom;
-                _clients.Add(clientNom, client);
-                ClientConnected(clientNom); // Event ClientConnected
-            }
-        }*/
 
         private void SendToClients(ConnexionClient client, object data)
         {

@@ -3,7 +3,8 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 
-namespace Laby_Reseau
+//namespace Laby_Reseau
+namespace Labyrinthe
 {
     public delegate void DataReceiveTCP(ConnexionClient sender, object data);
     public class ConnexionClient

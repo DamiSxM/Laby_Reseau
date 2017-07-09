@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using Laby_Interfaces;
+//using Laby_Interfaces;
 
-namespace Laby_Reseau
+//namespace Laby_Reseau
+namespace Labyrinthe
 {
     public enum MessageTCP
     {

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using Laby_Interfaces;
+//using Laby_Interfaces;
 
-namespace Laby_Reseau
+//namespace Laby_Reseau
+namespace Labyrinthe
 {
-    public enum Etat
-    {
-        SERVER, CLIENT
-    };
     public class Reseau : ILiaison
     {
         string _ipServer;
@@ -37,29 +34,25 @@ namespace Laby_Reseau
         {
             _port = 1234;
             _maxPlayer = 4;
-            Initialize();
-            RechercheServer();
         }
 
-        public Reseau(Etat init)
+        public void Start()
         {
-            _port = 1234;
-            _maxPlayer = 4;
-            Initialize();
-            switch (init)
-            {
-                case Etat.CLIENT: RechercheServer(); break;
-                case Etat.SERVER: UDP_FinRechercheServer(null); break;
-            }
+            Start(Etat.CLIENT);
         }
 
-        void Initialize()
+        public void Start(Etat init)
         {
             _gestionUDP = new GestionUDP(_port);
             _gestionUDP.FinRechercheServer += UDP_FinRechercheServer; ;
             _gestionTCP = new GestionTCP(_port);
             _gestionTCP.ClientConnected += TCP_ClientConnected;
             _gestionTCP.DataReceived += TCP_DataReceived;
+            switch (init)
+            {
+                case Etat.CLIENT: RechercheServer(); break;
+                case Etat.SERVER: UDP_FinRechercheServer(null); break;
+            }
         }
 
         private void TCP_ClientConnected(string ip)
