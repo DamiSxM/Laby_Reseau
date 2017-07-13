@@ -12,6 +12,10 @@ namespace Labyrinthe
         TcpClient _client;
         string _clientname;
 
+
+        NetworkStream nstream;
+        BinaryFormatter formatter;
+
         public string Nom
         {
             get { return _clientname; }
@@ -36,22 +40,27 @@ namespace Labyrinthe
             TcpClient client = (TcpClient)clientObj;
             do
             {
-                try
-                {
+                /*try
+                {*/
                     if (client.GetStream().CanRead)
                     {
-                        NetworkStream nstream = client.GetStream();
-                        BinaryFormatter formatter = new BinaryFormatter();
+                        /*NetworkStream nstream = client.GetStream();
+                        BinaryFormatter formatter = new BinaryFormatter();*/
+                        nstream = client.GetStream();
+                        formatter = new BinaryFormatter();
 
                         object data = (object)formatter.Deserialize(nstream);
+
                         GestionDataFromServer(data);
                     }
-                }
+                /*}
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine(string.Format("ConnexionClient.Lecture : Exception : {0}", ex.Message));
+                    throw ex;
+                    /*System.Diagnostics.Debug.WriteLine(string.Format("ConnexionClient.Lecture : Exception {0} : {1}", ex.GetType(), ex.Message));
+                    System.Diagnostics.Debug.WriteLine(string.Format("ConnexionClient.Lecture : ARRET !"));
                     _lectureLoop = false;
-                }
+                }*/
             } while (_lectureLoop);
         }
         private void GestionDataFromServer(object data)
@@ -77,8 +86,9 @@ namespace Labyrinthe
 
         public void Close()
         {
-            _lectureLoop = false;
-            _client.SendTimeout = 1;
+            nstream.Close();
+               _lectureLoop = false;
+            //_client.SendTimeout = 1;
             _client.Close();
         }
     }

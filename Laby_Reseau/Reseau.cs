@@ -62,8 +62,16 @@ namespace Labyrinthe
 
         private void TCP_DataReceived(string sender, object data)
         {
-            System.Diagnostics.Debug.WriteLine(string.Format("Reseau.TCP_DataReceived : {0} : Réception data TCP : {1}", sender, data));
-            OnDataReceived(sender, data); // Faire des trucs..
+            if (data.ToString() == "stop")
+            {
+                _gestionUDP.Close();
+                _gestionTCP.Close();
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("Reseau.TCP_DataReceived : {0} : Réception data TCP : {1}", sender, data));
+                OnDataReceived(sender, data); // Faire des trucs..
+            }
         }
 
         public bool IsFinRechercheServer() { return _isFinRechercheServer; }
@@ -109,6 +117,8 @@ namespace Labyrinthe
 
         public void Close()
         {
+            _gestionTCP.SendData("close");
+
             _gestionUDP.Close();
             _gestionTCP.Close();
             System.Diagnostics.Debug.WriteLine(string.Format("Reseau.Close"));

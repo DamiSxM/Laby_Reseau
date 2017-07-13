@@ -52,8 +52,8 @@ namespace Labyrinthe
             TcpClient client = (TcpClient)clientObj;
             do
             {
-                try
-                {
+                //try
+                //{
                     if (client.GetStream().CanRead)
                     {
                         NetworkStream nstream = client.GetStream();
@@ -62,13 +62,13 @@ namespace Labyrinthe
                         object data = (object)formatter.Deserialize(nstream);
                         GestionDataFromServer(data);
                     }
-                }
+                /*}
                 catch (Exception ex)
                 {
                     //throw ex;
                     System.Diagnostics.Debug.WriteLine(string.Format("ClientTCP.Lecture : Exception : {0}", ex.Message));
-                    _lectureLoop = false;
-                }
+                    //_lectureLoop = false;
+                }*/
             } while (_lectureLoop);
         }
 
