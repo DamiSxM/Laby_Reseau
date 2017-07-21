@@ -27,8 +27,8 @@ namespace Labyrinthe
 
         public bool Connect(string ipserver)
         {
-            try
-            {
+            /*try
+            {*/
                 _ipServer = ipserver;
                 _client = new TcpClient(_ipServer, _port);
                 _clientName = ((IPEndPoint)_client.Client.LocalEndPoint).Address.ToString();
@@ -37,12 +37,12 @@ namespace Labyrinthe
                 th.Start(_client);
 
                 return true;
-            }
+            /*}
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(string.Format("ClientTCP.Connect : Exception connexion server : {0}", ex.Message));
                 return false;
-            }
+            }*/
         }
 
         bool _lectureLoop;

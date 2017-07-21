@@ -39,25 +39,18 @@ namespace Labyrinthe
                 _listener.Start();
                 do
                 {
-                    try
-                    {
-                        ConnexionClient client = new ConnexionClient(_listener.AcceptTcpClient());
-                        client.DataReceived += OnDataReceived;
-                        _clients.Add(client.Nom, client);       // TEST !
-                        System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.Ecoute : création client {0}", client.Nom));
-                        ClientConnected(client.Nom); // Event ClientConnected
+                    ConnexionClient client = new ConnexionClient(_listener.AcceptTcpClient());
+                    client.DataReceived += OnDataReceived;
+                    _clients.Add(client.Nom, client);       // TEST !
+                    System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.Ecoute : création client {0}", client.Nom));
+                    ClientConnected(client.Nom); // Event ClientConnected
 
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.Ecoute : Exception : echec création client : {0}", ex.Message));
-                        _ecouteLoop = false;
-                    }
                 } while (_ecouteLoop);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.Ecoute : Exception : erreur Ecoute server : {0}", ex.Message));
+                _ecouteLoop = false;
             }
         }
 
@@ -97,11 +90,15 @@ namespace Labyrinthe
 
         public void SendDataClients(object data)
         {
-            System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.SendDataClients : server -> clients : nb clients : {0}", _clients.Count));
-            foreach (DictionaryEntry entry in _clients)
+            if (_clients.Count > 0)
             {
-                ((ConnexionClient)entry.Value).SendData(data);
+                System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.SendDataClients : server -> {0} clients", _clients.Count));
+                foreach (DictionaryEntry entry in _clients)
+                {
+                    ((ConnexionClient)entry.Value).SendData(data);
+                }
             }
+            else System.Diagnostics.Debug.WriteLine(string.Format("ServerTCP.SendDataClients : server -> clients : annulé aucun client"));
         }
 
         public void SendDataClient(object data, string clientname)

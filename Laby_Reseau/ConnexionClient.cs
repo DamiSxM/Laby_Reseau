@@ -70,18 +70,18 @@ namespace Labyrinthe
 
         public void SendData(object data)
         {
-            try
-            {
+            /*try
+            {*/
                 lock (_client.GetStream())
                 {
                     BinaryFormatter bf = new BinaryFormatter();
                     bf.Serialize(_client.GetStream(), data);
                 }
-            }
+            /*}
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(string.Format("ConnexionClient.SendData : Exception : {0}", ex.Message));
-            }
+            }*/
         }
 
         public void Close()
